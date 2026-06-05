@@ -11,7 +11,7 @@ use core::panic::PanicInfo;
 
 mod vga_buffer;
 mod interrupts;
-pub mod gdt;
+mod gdt;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
@@ -24,15 +24,24 @@ pub extern "C" fn _start() -> ! {
 
     unsafe {
         // 존재하지 않는 메모리 주소를 강제로 수정하여 패닉을 발생시킴
-        *(0xdeadbeef as *mut u8) = 42;
+        // *(0xdeadbeef as *mut u8) = 42;
     };
 
     println!("It did not crash!");
-    loop {}
+    blog_os::hlt_loop();
+
+    loop {
+        // x86_64::instructions::hlt();
+
+        use blog_os::print;
+        print!("-");
+    }
 }
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
+    blog_os::hlt_loop();
+    
     loop {}
 }
