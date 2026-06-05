@@ -8,17 +8,22 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+
 mod vga_buffer;
 mod interrupts;
+pub mod gdt;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
     println!("Hello World{}", "!");
 
-    interrupts::init_idt();
+    // interrupts::init_idt();
     // x86_64::instructions::interrupts::int3(); 
 
+    blog_os::init();
+
     unsafe {
+        // 존재하지 않는 메모리 주소를 강제로 수정하여 패닉을 발생시킴
         *(0xdeadbeef as *mut u8) = 42;
     };
 
